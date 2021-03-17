@@ -24,7 +24,7 @@ class ListItem(NamedTuple):
     text: str
 
 
-def headers(lines):
+def header(lines):
     line = lines.popleft()
     match = re.search(r"^(#+)\s(.*)$", line)
     level = len(match.group(1))
@@ -32,7 +32,7 @@ def headers(lines):
     return Header(level, text)
 
 
-def empty_lines(lines):
+def empty_line(lines):
     lines.popleft()
 
 def paragraph(lines):
@@ -54,9 +54,9 @@ def list_item(lines):
 
 
 PATTERNS = {
-    r"^\s*$": empty_lines,
+    r"^\s*$": empty_line,
     r"^\s*\*\s.*$": list_item,
-    r"^#+\s.*$": headers,
+    r"^#+\s.*$": header,
     r"^.*$": paragraph
 }
 
