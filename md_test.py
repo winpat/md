@@ -1,5 +1,5 @@
 import pytest
-from md import md, empty_lines, headers, Header
+from md import md, Paragraph, paragraph, empty_lines, headers, Header
 from collections import deque
 
 
@@ -23,10 +23,18 @@ def test_empty_lines(text):
     assert md(text) == []
 
 
+def test_paragraph():
+    assert md("Hello World!") == [Paragraph("Hello World!")]
+
+
 def test_md():
 
     text = """
 # Heading 1
 
+This is the first paragraph.
 """
-    assert md(text) == [Header(level=1, text="Heading 1")]
+    assert md(text) == [
+        Header(level=1, text="Heading 1"),
+        Paragraph(text="This is the first paragraph."),
+    ]

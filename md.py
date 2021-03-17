@@ -3,7 +3,7 @@
 We iterate over the lines from start to end. For every line we try to figure out
 which parsing function we need to apply to it (header, text, etc.).
 
-    Then we apply the first matching parsing function. A parser can consume as many
+Then we apply the first matching parsing function. A parser can consume as many
 lines as it wants, in the end it needs to return a parsed token.
 
 """
@@ -14,6 +14,9 @@ import re
 
 class Header(NamedTuple):
     level: int
+    text: str
+
+class Paragraph(NamedTuple):
     text: str
 
 
@@ -28,10 +31,14 @@ def headers(lines):
 def empty_lines(lines):
     lines.popleft()
 
+def paragraph(lines):
+    return Paragraph(lines.popleft())
+
 
 PATTERNS = {
     r"^\s*$": empty_lines,
     r"^#+\s.*$": headers,
+    r"^.*$": paragraph
 }
 
 
@@ -44,5 +51,6 @@ def md(text):
             if re.match(pattern, head):
                 if parsed := parser(lines):
                     tokens.append(parsed)
+                break
 
     return tokens
