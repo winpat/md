@@ -19,6 +19,10 @@ class Header(NamedTuple):
 class Paragraph(NamedTuple):
     text: str
 
+class ListItem(NamedTuple):
+    level: int
+    text: str
+
 
 def headers(lines):
     line = lines.popleft()
@@ -35,8 +39,23 @@ def paragraph(lines):
     return Paragraph(lines.popleft())
 
 
+def list_item(lines):
+    line = lines.popleft()
+    match = re.search(r"^(\s*\*\s)(.*)$", line)
+    prefix_length = len(match.group(1))
+    # Sub items need to indented with 2 spaces.
+    level = prefix_length // 2
+    text = match.group(2)
+    # Join text of next line if it has the same indentation
+    while lines and re.match(rf"^\s{{{prefix_length}}}[^\s*].*$", lines[0]):
+        text += " " +  lines.popleft().lstrip()
+
+    return ListItem(level, text)
+
+
 PATTERNS = {
     r"^\s*$": empty_lines,
+    r"^\s*\*\s.*$": list_item,
     r"^#+\s.*$": headers,
     r"^.*$": paragraph
 }
