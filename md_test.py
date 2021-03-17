@@ -1,5 +1,5 @@
 import pytest
-from md import md, headers, Header
+from md import md, empty_lines, headers, Header
 from collections import deque
 
 
@@ -13,11 +13,20 @@ from collections import deque
     ],
 )
 def test_headers(text, expected):
-    assert headers(deque([text])) == expected
+    assert md(text) == [expected]
+
+
+@pytest.mark.parametrize(
+    "text", [("    "), (""), ("\n\n \n")],
+)
+def test_empty_lines(text):
+    assert md(text) == []
 
 
 def test_md():
 
-    text = """# Heading 1 """
+    text = """
+# Heading 1
 
+"""
     assert md(text) == [Header(level=1, text="Heading 1")]

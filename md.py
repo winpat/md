@@ -1,3 +1,12 @@
+"""A simple regex-based markdown parser.
+
+We iterate over the lines from start to end. For every line we try to figure out
+which parsing function we need to apply to it (header, text, etc.).
+
+    Then we apply the first matching parsing function. A parser can consume as many
+lines as it wants, in the end it needs to return a parsed token.
+
+"""
 from collections import deque
 from typing import NamedTuple
 import re
@@ -16,7 +25,14 @@ def headers(lines):
     return Header(level, text)
 
 
-PATTERNS = {r"^#+\s.*$": headers}
+def empty_lines(lines):
+    lines.popleft()
+
+
+PATTERNS = {
+    r"^\s*$": empty_lines,
+    r"^#+\s.*$": headers,
+}
 
 
 def md(text):
@@ -26,7 +42,7 @@ def md(text):
         head = lines[0]
         for pattern, parser in PATTERNS.items():
             if re.match(pattern, head):
-                parsed = parser(lines)
-                tokens.append(parsed)
+                if parsed := parser(lines):
+                    tokens.append(parsed)
 
     return tokens
