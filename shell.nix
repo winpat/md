@@ -4,5 +4,6 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     python3
     python3Packages.pytest
+    python3Packages.ipdb
   ];
 }
